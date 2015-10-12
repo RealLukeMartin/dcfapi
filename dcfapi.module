@@ -28,7 +28,7 @@
 
 function dcfapi_menu() {
   $items['dcfapi'] = array(
-    'title' => 'Drupal Cloudflare API',
+    'title' => 'Drupal CloudFlare API',
     'page callback' => 'dcfapi_page',
     'access arguments' => array('access content'),
     'type' => MENU_CALLBACK,
@@ -37,5 +37,12 @@ function dcfapi_menu() {
   return $items;
 }
 function dcfapi_page() {
-print '<h1>Well howdy there!</h1>';
+	include 'inc/class_cloudflare.php';
+
+	$cf = new cloudflare_api("me@example.com", "CLOUDFLARE_API_KEY");
+	$response = $cf->stats("poeticsystems.com", $cf::INTERVAL_30_DAYS);
+
+	$json_response = json_encode($response);
+
+	print $json_response; 
 }

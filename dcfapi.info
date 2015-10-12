@@ -1,4 +1,4 @@
-name = Drupal Cloudflare API
-description = Get data from Cloudflare account
-package = Cloudflare
+name = Drupal CloudFlare API
+description = Get data from CloudFlare account
+package = CloudFlare
 core = 7.x
