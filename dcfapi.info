@@ -1,0 +1,4 @@
+name = Drupal Cloudflare API
+description = Get data from Cloudflare account
+package = Cloudflare
+core = 7.x
