@@ -25,8 +25,19 @@
  *   set this to FALSE. "title arguments": Arguments to send to t() or your
  *   custom callback, with path component substitution as described above.
  */
-
+/**
+* Implementation of hook_menu().
+*/
 function dcfapi_menu() {
+  //Admin Page
+  $items['admin/config/people/dcfapi'] = array(
+    'title' => 'Drupal Cloudflare API',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('dcfapi_admin'),
+    'access arguments' => array('administer drupal cloudflare api'),
+    'description' => t('Configure the Drupal Cloudflare API settings.')
+  );
+  //Payload
   $items['dcfapi'] = array(
     'title' => 'Drupal CloudFlare API',
     'page callback' => 'dcfapi_page',
@@ -36,12 +47,53 @@ function dcfapi_menu() {
 
   return $items;
 }
+/**
+* Implements hook_permission().
+*/
+function dcfapi_permission() {
+  return array(
+    'administer drupal cloudflare api' => array(
+      'title' => t('Administer Cloudflare'),
+      'description' => t('Perform administration tasks for Cloudflare.'),
+    ),
+  );
+}
+function dcfapi_admin() {
+  $form = array();
+
+  $form['dcfapi_email'] = array(
+    '#type' => 'textfield',
+    '#title' => t('E-mail address'),
+    '#description' => t('Email Address for your CloudFlare account'),
+    '#default_value' => variable_get('dcfapi_email', ''),
+    '#required' => TRUE,
+  );
+  $form['dcfapi_key'] = array(
+    '#type' => 'textfield',
+    '#title' => t('API key'),
+    '#description' => t('API key for your Cloudflare account.'),
+    '#default_value' => variable_get('dcfapi_key', ''),
+    '#required' => TRUE,
+  );
+  return system_settings_form($form);
+}
+
+function dcfapi_admin_submit($form, &$form_state) {
+  $form_values = $form_state['values'];
+  variable_set('dcfapi_email', $form_values['api_email']);
+  variable_set('dcfapi_key', $form_values['api_key']);
+}
+
 function dcfapi_page() {
+
 	include 'inc/class_cloudflare.php';
+	$cf_email = variable_get('dcfapi_email', FALSE);
+	$cf_api_key = variable_get('dcfapi_key', FALSE);
 
-	$cf = new cloudflare_api("me@example.com", "CLOUDFLARE_API_KEY");
-	$response = $cf->stats("poeticsystems.com", $cf::INTERVAL_30_DAYS);
-
+	$cf = new cloudflare_api($cf_email , $cf_api_key);
+	
+	$response = $cf->stats("poeticsystems.com", $cf::INTERVAL_7_DAYS);
+	
 	$json_response = json_encode($response);
 
 	print $json_response; 
